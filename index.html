@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dosyalarım</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080c12;--surface:#0e1420;--card:#131927;--border:#1e2a3a;
+      --accent:#00d4ff;--accent2:#7c3aed;--text:#eef2ff;--muted:#6b7a99;
+    }
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    body::before{
+      content:'';position:fixed;inset:0;
+      background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
+      background-size:48px 48px;pointer-events:none;z-index:0;
+    }
+    body::after{
+      content:'';position:fixed;top:-30%;left:-20%;width:70%;height:70%;
+      background:radial-gradient(ellipse,rgba(124,58,237,.12) 0%,transparent 70%);
+      pointer-events:none;z-index:0;animation:drift 18s ease-in-out infinite alternate;
+    }
+    @keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(8%,6%) scale(1.08);}}
+    .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 20px 80px;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:24px 0 0;}
+    .brand{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.5px;}
+    .brand em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .pill{font-size:11px;font-weight:500;background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.2);border-radius:999px;padding:5px 12px;letter-spacing:.5px;transition:background .3s,color .3s,border-color .3s;}
+    .profile{text-align:center;padding:48px 0 36px;animation:fadeUp .6s ease both;}
+    .avatar{
+      width:88px;height:88px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent2),var(--accent));
+      display:flex;align-items:center;justify-content:center;font-size:38px;
+      margin:0 auto 18px;
+      box-shadow:0 0 40px rgba(124,58,237,.35),0 0 0 1px rgba(255,255,255,.06);
+      position:relative;
+    }
+    .avatar::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));z-index:-1;opacity:.5;filter:blur(8px);}
+    .profile h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.5px;margin-bottom:8px;}
+    .profile p{font-size:14px;color:var(--muted);line-height:1.6;max-width:300px;margin:0 auto;}
+    .stats{display:flex;gap:1px;background:var(--border);border-radius:14px;overflow:hidden;margin-bottom:28px;border:1px solid var(--border);animation:fadeUp .6s .1s ease both;}
+    .stat{flex:1;background:var(--card);padding:14px 10px;text-align:center;}
+    .stat-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent);line-height:1;}
+    .stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px;}
+    .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .sec-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+    .refresh-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:6px;transition:color .2s;display:flex;align-items:center;}
+    .refresh-btn:hover{color:var(--accent);}
+    .refresh-btn svg{width:15px;height:15px;}
+    .refresh-btn.spinning svg{animation:spin .7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    #fileList{display:flex;flex-direction:column;gap:10px;}
+    .file-card{
+      display:flex;align-items:center;gap:14px;
+      background:var(--card);border:1px solid var(--border);border-radius:16px;
+      padding:16px 18px;cursor:pointer;text-decoration:none;color:var(--text);
+      transition:border-color .2s,transform .18s,box-shadow .2s,background .2s;
+      animation:fadeUp .5s ease both;position:relative;overflow:hidden;
+    }
+    .file-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.04),transparent 60%);opacity:0;transition:opacity .25s;}
+    .file-card:hover{border-color:rgba(0,212,255,.3);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(0,212,255,.08);background:#161e2e;}
+    .file-card:hover::before{opacity:1;}
+    .file-card:active{transform:scale(.98);}
+    .file-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .file-info{flex:1;min-width:0;}
+    .file-name{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+    .file-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+    .file-size,.file-date{font-size:11px;color:var(--muted);}
+    .file-type-badge{font-size:10px;font-weight:600;border-radius:5px;padding:2px 7px;letter-spacing:.3px;text-transform:uppercase;}
+    .dl-btn{color:var(--muted);flex-shrink:0;transition:color .2s,transform .2s;}
+    .file-card:hover .dl-btn{color:var(--accent);transform:translateX(2px);}
+    .dl-btn svg{width:18px;height:18px;}
+    .empty{text-align:center;padding:60px 20px;color:var(--muted);}
+    .empty-icon{font-size:48px;margin-bottom:16px;opacity:.4;}
+    .empty h3{font-family:'Syne',sans-serif;font-size:16px;margin-bottom:8px;color:var(--text);opacity:.5;}
+    .empty p{font-size:13px;line-height:1.7;}
+    .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 0;gap:16px;color:var(--muted);font-size:13px;}
+    .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+    .error-msg{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:16px 20px;font-size:13px;color:#fca5a5;display:none;margin-bottom:16px;line-height:1.6;}
+    .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:999px;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    footer{text-align:center;margin-top:48px;font-size:12px;color:var(--muted);opacity:.5;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="brand">files<em>.</em></div>
+    <div class="pill" id="statusPill">● Yükleniyor</div>
+  </nav>
+
+  <div class="profile">
+    <div class="avatar">🗂️</div>
+    <h1>Dosyalarım</h1>
+    <p>Paylaştığım dosyalara buradan ulaşabilirsin. Tıkla, indir.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="statCount">—</div><div class="stat-lbl">Dosya</div></div>
+    <div class="stat"><div class="stat-val" id="statSize">—</div><div class="stat-lbl">Toplam</div></div>
+    <div class="stat"><div class="stat-val" id="statSlot">—</div><div class="stat-lbl">Kalan Slot</div></div>
+  </div>
+
+  <div class="sec-header">
+    <div class="sec-title">Dosyalar</div>
+    <button class="refresh-btn" id="refreshBtn" title="Yenile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+  <div id="fileList"><div class="loading"><div class="spinner"></div>Dosyalar yükleniyor…</div></div>
+  <footer>Powered by GitHub Releases</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  //  ▼ SADECE BURASI DEĞİŞTİRİLECEK ▼
+  const GITHUB_USER = "KULLANICI_ADIN";   // GitHub kullanıcı adın
+  const GITHUB_REPO = "REPO_ADIN";        // Repo adı (örn: dosyalarim)
+  const RELEASE_TAG = "files";            // Release tag (admin ile aynı olmalı)
+  //  ▲ ────────────────────────────── ▲
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const MAX = 10;
+
+  const $ = id => document.getElementById(id);
+  const toast = $('toast');
+
+  function showToast(msg,dur=2500){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),dur);}
+  function fmtSize(b){if(!b)return'—';if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
+  function fmtDate(s){return s?new Date(s).toLocaleDateString('tr-TR',{day:'2-digit',month:'short',year:'numeric'}):'';}
+
+  function typeInfo(name){
+    const e=(name.split('.').pop()||'').toLowerCase();
+    const m={pdf:['📄','#ef4444'],zip:['🗜️','#f59e0b'],rar:['🗜️','#f59e0b'],'7z':['🗜️','#f59e0b'],
+      mp4:['🎬','#8b5cf6'],mov:['🎬','#8b5cf6'],mkv:['🎬','#8b5cf6'],
+      mp3:['🎵','#10b981'],wav:['🎵','#10b981'],flac:['🎵','#10b981'],
+      jpg:['🖼️','#06b6d4'],jpeg:['🖼️','#06b6d4'],png:['🖼️','#06b6d4'],gif:['🖼️','#06b6d4'],webp:['🖼️','#06b6d4'],
+      doc:['📝','#3b82f6'],docx:['📝','#3b82f6'],xls:['📊','#10b981'],xlsx:['📊','#10b981'],
+      ppt:['📋','#f97316'],pptx:['📋','#f97316'],txt:['📃','#94a3b8'],
+      exe:['⚙️','#6b7280'],apk:['📱','#84cc16'],dmg:['🍎','#94a3b8'],iso:['💿','#6b7280'],
+    };
+    const v=m[e]||['📎','#6b7a99'];
+    return{icon:v[0],color:v[1],bg:v[1].replace(')',', .12)').replace('rgb','rgba').replace('#','').replace(/([a-f0-9]{6})/i,(_,h)=>{
+      const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+      return`rgba(${r},${g},${b},.12)`;
+    })};
+  }
+  // cleaner bg helper
+  function hexBg(color){
+    const r=parseInt(color.slice(1,3),16),g=parseInt(color.slice(3,5),16),b=parseInt(color.slice(5,7),16);
+    return`rgba(${r},${g},${b},.12)`;
+  }
+
+  function renderFiles(assets){
+    const list=$('fileList');
+    if(!assets.length){
+      list.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><h3>Henüz dosya yok</h3><p>Yakında yeni dosyalar paylaşılacak.</p></div>`;
+      $('statCount').textContent='0';$('statSize').textContent='0B';$('statSlot').textContent=MAX;return;
+    }
+    $('statCount').textContent=assets.length;
+    $('statSize').textContent=fmtSize(assets.reduce((s,a)=>s+a.size,0));
+    $('statSlot').textContent=Math.max(0,MAX-assets.length);
+    list.innerHTML='';
+    assets.forEach((a,i)=>{
+      const ext=(a.name.split('.').pop()||'?').toUpperCase();
+      const info=typeInfo(a.name);
+      const bg=hexBg(info.color);
+      const card=document.createElement('a');
+      card.className='file-card';
+      card.href=a.browser_download_url;
+      card.target='_blank';card.rel='noopener noreferrer';
+      card.style.animationDelay=(i*.07)+'s';
+      card.innerHTML=`
+        <div class="file-icon" style="background:${bg};">${info.icon}</div>
+        <div class="file-info">
+          <div class="file-name">${a.name}</div>
+          <div class="file-meta">
+            <span class="file-size">${fmtSize(a.size)}</span>
+            <span class="file-type-badge" style="background:${bg};color:${info.color};">${ext}</span>
+            <span class="file-date">${fmtDate(a.updated_at||a.created_at)}</span>
+          </div>
+        </div>
+        <div class="dl-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>`;
+      card.addEventListener('click',()=>showToast('⬇️ İndiriliyor: '+a.name));
+      list.appendChild(card);
+    });
+  }
+
+  async function loadFiles(){
+    $('refreshBtn').classList.add('spinning');
+    $('fileList').innerHTML='<div class="loading"><div class="spinner"></div>Dosyalar yükleniyor…</div>';
+    $('errorMsg').style.display='none';
+    try{
+      const res=await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases/tags/${RELEASE_TAG}`);
+      if(!res.ok)throw new Error(`GitHub API ${res.status}: Kullanıcı adı, repo adı veya release tag'ini kontrol et.`);
+      const data=await res.json();
+      const assets=(data.assets||[]).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+      const pill=$('statusPill');
+      pill.textContent='● Bağlandı';pill.style.cssText='background:rgba(16,185,129,.1);color:#10b981;border-color:rgba(16,185,129,.2);';
+      renderFiles(assets);
+    }catch(e){
+      const pill=$('statusPill');
+      pill.textContent='● Hata';pill.style.cssText='background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.2);';
+      $('errorMsg').textContent='⚠️ '+e.message;$('errorMsg').style.display='block';
+      $('fileList').innerHTML='';console.error(e);
+    }finally{$('refreshBtn').classList.remove('spinning');}
+  }
+
+  $('refreshBtn').addEventListener('click',loadFiles);
+  loadFiles();
+</script>
+</body>
+</html>
